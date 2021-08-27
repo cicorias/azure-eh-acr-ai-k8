@@ -1,0 +1,25 @@
+resource_group_name: notifier-resource-group-acc
+application_insights_name: notifier-application-insights-acc
+container_registry_name: notifiercontainerregistryacc # Only lowercase and alphanumeric names.
+
+public_ip_name: notifier-public-ip-acc
+ingress_name: notifier-ingress-acc
+aks_name: notifier-aks-acc
+aks_dns_prefix: notifieraksacc
+aks_tag_environment: Acceptance
+
+eventhub_namespace:
+    name: eventhubs-acc
+    capacity: 1
+    maximum_throughput_units: 10
+
+eventhub:
+    notifications:
+        partition_count: 2
+        message_retention: 7
+
+storage_account_name: notifierstoreacc
+
+keyvault_webapi_name: kv-webapi-acc
+keyvault_worker_appinsights_name: kv-worker-insights-acc
+keyvault_worker_email_name: kv-worker-email-acc

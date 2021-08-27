@@ -1,0 +1,25 @@
+resource_group_name: notifier-resource-group-prd
+application_insights_name: notifier-application-insights-prd
+container_registry_name: notifiercontainerregistryprd  # Only lowercase and alphanumeric names.
+
+public_ip_name: notifier-public-ip-prd
+ingress_name: notifier-ingress-prd
+aks_name: notifier-aks-prd
+aks_dns_prefix: notifieraksprd
+aks_tag_environment: Production
+
+eventhub_namespace:
+    name: eventhubs-prd
+    capacity: 1
+    maximum_throughput_units: 10
+
+eventhub:
+    notifications:
+        partition_count: 2
+        message_retention: 7
+
+storage_account_name: notifierstoreprd
+
+keyvault_webapi_name: kv-webapi-prd
+keyvault_worker_appinsights_name: kv-worker-insights-prd
+keyvault_worker_email_name: kv-worker-email-prd

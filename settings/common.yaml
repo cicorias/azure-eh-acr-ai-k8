@@ -1,0 +1,9 @@
+tenant_id: 0dd608f6-0108-44d4-a52f-ccddc306b592
+
+kv_allow:
+    sternschleuder-Notifier-39f0f54d-f6e9-44e1-9b3c-2c82dd355541: # Service Connection (principle which used in azuredevops pipeline)
+        object_id: 6e3e67c5-0c1a-4352-9cf7-4dd1d7ef4db2
+        secret_permissions: ["get", "list", "delete", "set", "recover", "backup", "restore"]
+    notifier-devs: # Allow group
+        object_id: 54a80548-0850-463a-9d45-b157d5bdf5df
+        secret_permissions: ["get", "list", "delete", "set", "recover", "backup", "restore"]

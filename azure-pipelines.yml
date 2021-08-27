@@ -1,0 +1,63 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+resources:
+  repositories:
+  - repository: self
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  - task: TerraformInstaller@0
+    displayName: Install Terraform Latest 
+    inputs:
+      terraformVersion: 'latest'
+
+  - task: AzureCLI@1
+    displayName: Authorize Azure
+    inputs:
+      azureSubscription: 'ARM Notifier'
+      scriptLocation: inlineScript
+      inlineScript: |
+        echo "##vso[task.setvariable variable=AZURE_CLIENT_ID;issecret=false]${servicePrincipalId}"
+        echo "##vso[task.setvariable variable=AZURE_CLIENT_SECRET;issecret=true]${servicePrincipalKey}"
+        echo "##vso[task.setvariable variable=AZURE_SUBSCRIPTION_ID;issecret=false]$(az account show --query 'id' -o tsv)"
+        echo "##vso[task.setvariable variable=AZURE_TENANT_ID;issecret=false]${tenantId}"
+      addSpnToEnvironment: true
+
+  - bash: |
+      terraform init
+      for ENV in "acc" "prd"
+      do
+        terraform workspace select $ENV || terraform workspace new $ENV
+        terraform validate
+      done
+    workingDirectory: '$(System.DefaultWorkingDirectory)'
+    displayName: 'Terraform Init/Validate configuration'
+    env:
+      ARM_CLIENT_ID: $(AZURE_CLIENT_ID)
+      ARM_CLIENT_SECRET: $(AZURE_CLIENT_SECRET)
+      ARM_SUBSCRIPTION_ID: $(AZURE_SUBSCRIPTION_ID)
+      ARM_TENANT_ID: $(AZURE_TENANT_ID)
+  
+  - task: CopyFiles@2
+    displayName: Copy Terraform Configs
+    inputs:
+      SourceFolder: '.'
+      Contents: '**'
+      TargetFolder: '$(build.ArtifactStagingDirectory)'
+      CleanTargetFolder: true
+      OverWrite: true
+
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Terraform Artifacts
+    inputs:
+      PathtoPublish: '$(build.ArtifactStagingDirectory)'
+      ArtifactName: 'tf'
+      publishLocation: 'Container'
